@@ -9,12 +9,14 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.managedObjectContext) var moc
-    @State private var lastNameFilter = "A"
+    @State private var lastNameFilter = "SH"
+    @State private var filterType:FilterType = .beginsWith
+    @State private var sortDescriptors = [SortDescriptor<Singer>]()
     
     var body: some View {
         VStack {
             // ----- le T dans FilteredListView devient de type Singer grâce au (singer: Singer)
-            FilteredList(filterKey: "lastName", filterValue: lastNameFilter) { (singer: Singer) in
+            FilteredList(filterKey: "lastName", predicate: filterType, filterValue: lastNameFilter, sortDescriptors: sortDescriptors) { (singer: Singer) in
                 Text("\(singer.wrappedFirstName) \(singer.wrappedLastName)")
             }
             
@@ -40,6 +42,22 @@ struct ContentView: View {
             
             Button("Show S"){
                 lastNameFilter = "S"
+            }
+            
+            Button("Begins with"){
+                filterType = .beginsWith
+            }
+            
+            Button("Contains"){
+                filterType = .contains
+            }
+            
+            Button("Sort A-Z"){
+                sortDescriptors = [SortDescriptor(\.lastName)]
+            }
+            
+            Button("Sort Z-A") {
+                sortDescriptors = [SortDescriptor(\.lastName, order: .reverse)]
             }
         }
         .padding()
